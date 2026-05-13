@@ -1,0 +1,1434 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MEETOR | 진로검사로 끝나지 않는 AI 진로탐색 멘토링</title>
+<meta name="description" content="MEETOR는 진로를 아직 정하지 못한 학생에게 AI 분석, 검증된 현업 멘토링, 진로탐색 리포트까지 이어지는 안전한 진로탐색 경험을 제공합니다.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.0.0/tabler-icons.min.css">
+<style>
+/* ════════════════════════════════════════════════════════
+   Design Tokens — 데모 앱과 동일한 컬러 시스템
+   ════════════════════════════════════════════════════════ */
+:root {
+  --sky: #1A6FA8; --sky-l: #E8F4FC; --sky-mid: #B3D8F0; --sky-deep: #0F4E7E;
+  --navy: #1A3A5C; --navy-deep: #0F2440; --navy-l: #EEF4FA;
+  --mint: #14B8A6; --mint-l: #F0FDFA;
+  --warm: #F59E0B; --warm-l: #FEF3C7; --cream: #FDF8F0;
+  --white: #FFFFFF;
+  --gray-50: #F8FAFC; --gray-100: #F1F5F9; --gray-200: #E2E8F0; --gray-300: #CBD5E1;
+  --gray-400: #94A3B8; --gray-500: #64748B; --gray-600: #475569; --gray-700: #334155; --gray-800: #1E293B;
+  --green: #059669; --green-l: #ECFDF5;
+  --red: #DC2626; --red-l: #FEF2F2;
+  --purple: #7C3AED; --purple-l: #F5F3FF;
+  --radius-sm: 10px; --radius-md: 14px; --radius-lg: 20px; --radius-xl: 28px;
+  --max-w: 1180px;
+  --shadow-sm: 0 1px 3px rgba(15,36,64,0.06);
+  --shadow-md: 0 4px 16px rgba(15,36,64,0.08);
+  --shadow-lg: 0 12px 40px rgba(15,36,64,0.12);
+  --shadow-xl: 0 24px 60px rgba(15,36,64,0.18);
+  font-family: "Noto Sans KR", system-ui, sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--white); color: var(--gray-800);
+  line-height: 1.65; -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; cursor: pointer; border: none; background: none; }
+::selection { background: var(--sky-mid); color: var(--navy); }
+
+.container { max-width: var(--max-w); margin: 0 auto; padding: 0 24px; }
+section { padding: 96px 0; }
+
+/* ── 공용 컴포넌트 ── */
+.eyebrow {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--sky); background: var(--sky-l);
+  padding: 6px 14px; border-radius: 24px;
+  border: 1px solid var(--sky-mid); margin-bottom: 18px;
+}
+.eyebrow.dark { color: var(--sky-mid); background: rgba(179,216,240,0.12); border-color: rgba(179,216,240,0.3); }
+.eyebrow.mint { color: var(--mint); background: var(--mint-l); border-color: #5EEAD4; }
+.eyebrow.warm { color: var(--warm); background: var(--warm-l); border-color: #FDE68A; }
+
+.section-title {
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 800; color: var(--navy);
+  line-height: 1.25; letter-spacing: -0.8px; margin-bottom: 14px;
+}
+.section-title em {
+  font-style: normal; color: var(--sky);
+  background: linear-gradient(180deg, transparent 60%, rgba(179,216,240,0.5) 60%);
+  padding: 0 2px;
+}
+.section-sub {
+  font-size: clamp(15px, 1.5vw, 17px);
+  color: var(--gray-600); line-height: 1.75;
+  max-width: 640px; margin-bottom: 56px;
+}
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 13px 24px; border-radius: var(--radius-md);
+  font-size: 14px; font-weight: 700; transition: all .2s; white-space: nowrap;
+}
+.btn i { font-size: 16px; }
+.btn-primary {
+  background: var(--navy); color: #fff;
+  box-shadow: 0 4px 16px rgba(26,58,92,0.25);
+}
+.btn-primary:hover {
+  background: var(--sky); transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(26,111,168,0.35);
+}
+.btn-secondary {
+  background: var(--white); color: var(--navy);
+  border: 1.5px solid var(--gray-200);
+}
+.btn-secondary:hover { border-color: var(--navy); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.btn-lg { padding: 16px 32px; font-size: 15px; }
+
+/* ════════════════════════════════════════════════════════
+   HEADER
+   ════════════════════════════════════════════════════════ */
+.site-header {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--gray-200);
+}
+.site-header-inner {
+  display: flex; align-items: center;
+  height: 64px; max-width: var(--max-w); margin: 0 auto; padding: 0 24px;
+}
+.brand {
+  display: flex; align-items: center; gap: 10px;
+  font-weight: 800; font-size: 17px; letter-spacing: 2.5px; color: var(--navy);
+}
+.brand .logo-mark {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: linear-gradient(135deg, var(--sky) 0%, var(--sky-deep) 100%);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-weight: 800; font-size: 13px;
+  box-shadow: 0 2px 8px rgba(26,111,168,0.4);
+}
+.nav-menu { display: flex; align-items: center; gap: 4px; margin-left: auto; }
+.nav-menu a {
+  font-size: 13.5px; font-weight: 600; color: var(--gray-600);
+  padding: 8px 14px; border-radius: 8px; transition: all .15s;
+}
+.nav-menu a:hover { color: var(--navy); background: var(--gray-100); }
+.header-cta { margin-left: 12px; padding: 10px 18px !important; font-size: 13px !important; }
+
+.mobile-toggle {
+  display: none; margin-left: auto;
+  width: 40px; height: 40px; border-radius: 8px; background: var(--gray-100);
+  align-items: center; justify-content: center; font-size: 20px; color: var(--navy);
+}
+
+/* ════════════════════════════════════════════════════════
+   HERO
+   ════════════════════════════════════════════════════════ */
+.hero {
+  position: relative; padding: 90px 0 80px;
+  background:
+    radial-gradient(ellipse at top right, rgba(20,184,166,0.08), transparent 50%),
+    radial-gradient(ellipse at bottom left, rgba(26,111,168,0.10), transparent 50%),
+    linear-gradient(180deg, var(--navy-l) 0%, var(--white) 100%);
+  overflow: hidden;
+}
+.hero::before {
+  content: ''; position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(26,58,92,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(26,58,92,0.025) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+  pointer-events: none;
+}
+.hero-grid {
+  display: grid; grid-template-columns: 1.05fr 1fr;
+  gap: 60px; align-items: center; position: relative;
+}
+.hero-copy h1 {
+  font-size: clamp(32px, 4.5vw, 48px);
+  font-weight: 800; color: var(--navy);
+  line-height: 1.2; letter-spacing: -1px; margin-bottom: 20px;
+}
+.hero-copy h1 em {
+  font-style: normal;
+  background: linear-gradient(120deg, var(--sky) 0%, var(--mint) 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.hero-sub {
+  font-size: 16px; line-height: 1.75; color: var(--gray-600);
+  margin-bottom: 32px; max-width: 520px;
+}
+.hero-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 36px; }
+.hero-trust { display: flex; flex-wrap: wrap; gap: 24px; padding-top: 24px; border-top: 1px solid var(--gray-200); }
+.hero-trust-item { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--gray-600); }
+.hero-trust-item i { color: var(--mint); font-size: 16px; }
+
+/* Hero phone mockup */
+.hero-mockup { position: relative; display: flex; justify-content: center; perspective: 1500px; }
+.phone {
+  width: 100%; max-width: 300px; aspect-ratio: 9/19.5;
+  background: var(--white); border-radius: 36px;
+  border: 8px solid var(--navy-deep);
+  box-shadow: var(--shadow-xl);
+  position: relative; overflow: hidden;
+  transform: rotate(-2deg); transition: transform .5s ease;
+}
+.phone:hover { transform: rotate(-2deg) translateY(-8px); }
+.phone-screen { height: 100%; background: var(--gray-50); display: flex; flex-direction: column; position: relative; }
+.phone-notch {
+  position: absolute; top: 8px; left: 50%; transform: translateX(-50%);
+  width: 90px; height: 22px; background: var(--navy-deep);
+  border-radius: 14px; z-index: 5;
+}
+.phone-header-bar { background: var(--navy); padding: 36px 16px 12px; display: flex; align-items: center; gap: 8px; }
+.phone-logo {
+  width: 24px; height: 24px; border-radius: 6px;
+  background: linear-gradient(135deg, var(--sky), var(--sky-deep));
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-weight: 800; font-size: 10px;
+}
+.phone-logo-text { font-size: 11px; font-weight: 800; letter-spacing: 2px; color: var(--sky-mid); }
+.phone-content { flex: 1; padding: 14px 12px; display: flex; flex-direction: column; gap: 8px; overflow: hidden; }
+.phone-tag {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 9px; font-weight: 700; letter-spacing: 0.5px;
+  color: var(--sky); background: var(--sky-l);
+  border: 1px solid var(--sky-mid);
+  padding: 3px 8px; border-radius: 20px;
+  align-self: flex-start; margin-bottom: 2px;
+}
+.phone-h { font-size: 13px; font-weight: 800; color: var(--navy); line-height: 1.3; margin-bottom: 2px; }
+.phone-sub { font-size: 9.5px; color: var(--gray-600); line-height: 1.5; margin-bottom: 6px; }
+.phone-mentor-card {
+  background: var(--sky-l); border: 1.2px solid var(--sky);
+  border-radius: 12px; padding: 9px;
+}
+.phone-mentor-head { display: flex; align-items: center; gap: 7px; margin-bottom: 6px; }
+.phone-avatar {
+  width: 26px; height: 26px; border-radius: 50%;
+  background: var(--white); border: 1.5px solid var(--sky-mid);
+  color: var(--sky); display: flex; align-items: center; justify-content: center;
+  font-size: 9px; font-weight: 700;
+}
+.phone-mentor-name { font-size: 10px; font-weight: 700; color: var(--navy); }
+.phone-mentor-job { font-size: 8.5px; color: var(--gray-600); }
+.phone-match {
+  font-size: 8px; font-weight: 700; color: var(--sky);
+  background: var(--white); padding: 2px 6px; border-radius: 8px;
+  border: 1px solid var(--sky-mid);
+}
+.phone-reason {
+  font-size: 8.5px; color: var(--gray-600); line-height: 1.45;
+  padding: 5px 7px; background: var(--white);
+  border-radius: 6px; border-left: 2px solid var(--sky-mid);
+}
+.phone-mini-card {
+  background: var(--white); border: 1px solid var(--gray-200);
+  border-radius: 10px; padding: 8px;
+  display: flex; align-items: center; gap: 7px;
+}
+.phone-mini-card.outline { opacity: 0.7; }
+.phone-mini-avatar {
+  width: 20px; height: 20px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 8px; font-weight: 700;
+}
+.phone-mini-info { flex: 1; min-width: 0; }
+.phone-mini-name { font-size: 9.5px; font-weight: 700; color: var(--navy); }
+.phone-mini-job { font-size: 8px; color: var(--gray-600); }
+.phone-mini-match { font-size: 8px; color: var(--gray-400); font-weight: 600; }
+
+/* Floating cards */
+.float-card {
+  position: absolute; background: var(--white);
+  border-radius: 14px; box-shadow: var(--shadow-lg);
+  padding: 11px 13px; font-size: 12px;
+  display: flex; align-items: center; gap: 10px;
+  animation: floaty 5s ease-in-out infinite;
+}
+.float-card .fc-icon {
+  width: 34px; height: 34px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px; flex-shrink: 0;
+}
+.float-card .fc-label {
+  font-size: 9.5px; color: var(--gray-400); font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.float-card .fc-value { font-size: 12.5px; font-weight: 700; color: var(--navy); }
+@keyframes floaty { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+.float-card.fc1 { top: 8%; left: -8%; animation-delay: 0s; }
+.float-card.fc1 .fc-icon { background: var(--mint-l); color: var(--mint); }
+.float-card.fc2 { bottom: 12%; right: -6%; animation-delay: 1.5s; }
+.float-card.fc2 .fc-icon { background: var(--warm-l); color: var(--warm); }
+
+/* ════════════════════════════════════════════════════════
+   PROBLEM
+   ════════════════════════════════════════════════════════ */
+.problem { background: var(--cream); position: relative; }
+.problem-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+.problem-card {
+  background: var(--white); border-radius: var(--radius-lg);
+  padding: 28px; border: 1px solid var(--gray-200);
+  transition: all .25s; position: relative;
+}
+.problem-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: transparent; }
+.problem-card .pc-num {
+  position: absolute; top: 20px; right: 24px;
+  font-size: 56px; font-weight: 800;
+  color: var(--gray-100); line-height: 1; letter-spacing: -2px;
+}
+.problem-card .pc-icon {
+  width: 44px; height: 44px; border-radius: 12px;
+  background: var(--red-l); color: var(--red);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; margin-bottom: 16px;
+}
+.problem-card .pc-title { font-size: 17px; font-weight: 700; color: var(--navy); margin-bottom: 8px; line-height: 1.4; }
+.problem-card .pc-desc { font-size: 14px; color: var(--gray-600); line-height: 1.7; }
+.problem-card .pc-quote {
+  margin-top: 14px; font-size: 12.5px; color: var(--gray-500); font-style: italic;
+  padding: 10px 12px; background: var(--gray-50);
+  border-radius: 8px; border-left: 3px solid var(--gray-300);
+}
+
+/* ════════════════════════════════════════════════════════
+   SOLUTION FLOW
+   ════════════════════════════════════════════════════════ */
+.solution { background: var(--white); }
+.flow-wrap { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; position: relative; }
+.flow-step {
+  background: var(--white); border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg); padding: 24px 18px;
+  position: relative; transition: all .25s;
+}
+.flow-step:hover { transform: translateY(-4px); border-color: var(--sky-mid); box-shadow: var(--shadow-md); }
+.flow-step .fs-num {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--sky) 0%, var(--sky-deep) 100%);
+  color: #fff; display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 800; margin-bottom: 14px;
+  box-shadow: 0 4px 12px rgba(26,111,168,0.3);
+}
+.flow-step .fs-icon { font-size: 24px; color: var(--sky); margin-bottom: 10px; display: block; }
+.flow-step .fs-title { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 6px; line-height: 1.4; }
+.flow-step .fs-desc { font-size: 12px; color: var(--gray-600); line-height: 1.55; }
+.flow-step::after {
+  content: ''; position: absolute;
+  top: 50%; right: -10px;
+  width: 12px; height: 12px;
+  border-top: 2px solid var(--sky-mid); border-right: 2px solid var(--sky-mid);
+  transform: translateY(-50%) rotate(45deg); z-index: 2;
+}
+.flow-step:last-child::after { display: none; }
+
+/* ════════════════════════════════════════════════════════
+   DIFFERENTIATION
+   ════════════════════════════════════════════════════════ */
+.diff { background: linear-gradient(180deg, var(--navy-l) 0%, var(--white) 100%); }
+.diff-compare {
+  background: var(--white); border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg); padding: 22px 24px;
+  margin-bottom: 40px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+}
+.diff-compare .dc-label {
+  font-size: 11px; font-weight: 700; color: var(--gray-400);
+  letter-spacing: 0.8px; text-transform: uppercase; flex-shrink: 0;
+}
+.diff-compare .dc-item {
+  font-size: 13px; color: var(--gray-600);
+  padding: 6px 12px; border-radius: 20px;
+  background: var(--gray-100); border: 1px solid var(--gray-200);
+  display: flex; align-items: center; gap: 5px;
+}
+.diff-compare .dc-item.us {
+  background: var(--sky-l); color: var(--sky);
+  border-color: var(--sky-mid); font-weight: 700;
+}
+.diff-compare .dc-item i { font-size: 13px; }
+
+.diff-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.diff-card {
+  background: var(--white); border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg); padding: 32px 26px;
+  position: relative; overflow: hidden; transition: all .25s;
+}
+.diff-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-lg); border-color: transparent; }
+.diff-card::before {
+  content: ''; position: absolute; top: 0; left: 0;
+  width: 100%; height: 4px;
+  background: linear-gradient(90deg, var(--sky), var(--mint));
+}
+.diff-card .dcd-icon {
+  width: 56px; height: 56px; border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px; margin-bottom: 20px;
+}
+.diff-card.c1 .dcd-icon { background: var(--sky-l); color: var(--sky); }
+.diff-card.c2 .dcd-icon { background: var(--mint-l); color: var(--mint); }
+.diff-card.c3 .dcd-icon { background: var(--warm-l); color: var(--warm); }
+.diff-card .dcd-title { font-size: 18px; font-weight: 700; color: var(--navy); margin-bottom: 10px; }
+.diff-card .dcd-desc { font-size: 14px; color: var(--gray-600); line-height: 1.75; margin-bottom: 16px; }
+.diff-card .dcd-bullets { list-style: none; padding: 0; }
+.diff-card .dcd-bullets li {
+  font-size: 12.5px; color: var(--gray-700);
+  padding: 4px 0; display: flex; align-items: flex-start; gap: 6px;
+}
+.diff-card .dcd-bullets li i { color: var(--mint); font-size: 14px; flex-shrink: 0; margin-top: 3px; }
+
+/* ════════════════════════════════════════════════════════
+   STAKEHOLDER
+   ════════════════════════════════════════════════════════ */
+.stakeholder { background: var(--white); }
+.sk-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+.sk-card {
+  background: var(--white); border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg); padding: 28px;
+  transition: all .25s; position: relative; overflow: hidden;
+}
+.sk-card:hover { border-color: transparent; box-shadow: var(--shadow-lg); transform: translateY(-3px); }
+.sk-card::before {
+  content: ''; position: absolute;
+  top: 0; right: 0; width: 120px; height: 120px;
+  border-radius: 50%; opacity: 0.08;
+  transform: translate(40px, -40px);
+}
+.sk-card.student::before { background: var(--sky); }
+.sk-card.parent::before  { background: var(--mint); }
+.sk-card.mentor::before  { background: var(--purple); }
+.sk-card.school::before  { background: var(--warm); }
+.sk-head { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; position: relative; }
+.sk-icon {
+  width: 44px; height: 44px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center; font-size: 22px;
+}
+.sk-card.student .sk-icon { background: var(--sky-l); color: var(--sky); }
+.sk-card.parent  .sk-icon { background: var(--mint-l); color: var(--mint); }
+.sk-card.mentor  .sk-icon { background: var(--purple-l); color: var(--purple); }
+.sk-card.school  .sk-icon { background: var(--warm-l); color: var(--warm); }
+.sk-label {
+  font-size: 10.5px; font-weight: 700; letter-spacing: 1px;
+  color: var(--gray-400); text-transform: uppercase;
+}
+.sk-name { font-size: 18px; font-weight: 800; color: var(--navy); margin-top: 2px; }
+.sk-card ul { list-style: none; padding: 0; position: relative; }
+.sk-card ul li {
+  font-size: 13.5px; color: var(--gray-700);
+  padding: 7px 0; display: flex; align-items: flex-start; gap: 8px; line-height: 1.6;
+}
+.sk-card ul li i { color: var(--sky); font-size: 16px; flex-shrink: 0; margin-top: 2px; }
+.sk-card.parent ul li i { color: var(--mint); }
+.sk-card.mentor ul li i { color: var(--purple); }
+.sk-card.school ul li i { color: var(--warm); }
+
+/* ════════════════════════════════════════════════════════
+   MENTOR CATEGORIES
+   ════════════════════════════════════════════════════════ */
+.mentors { background: var(--cream); }
+.mc-tabs {
+  display: flex; gap: 18px; flex-wrap: wrap;
+  margin-bottom: 36px; padding-bottom: 18px;
+  border-bottom: 1px solid var(--gray-200);
+}
+.mc-tab-item { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--gray-500); }
+.mc-tab-item .dot { width: 8px; height: 8px; border-radius: 50%; }
+.mc-tab-item.t1 .dot { background: var(--sky); }
+.mc-tab-item.t2 .dot { background: var(--mint); }
+.mc-tab-item.t3 .dot { background: var(--warm); }
+.mc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.mc-col {
+  background: var(--white); border-radius: var(--radius-lg);
+  padding: 26px 22px; border: 1px solid var(--gray-200);
+}
+.mc-col-head { margin-bottom: 18px; padding-bottom: 16px; border-bottom: 1px dashed var(--gray-200); }
+.mc-col-tag {
+  display: inline-block;
+  font-size: 10.5px; font-weight: 700; letter-spacing: 0.8px;
+  padding: 3px 10px; border-radius: 20px;
+  text-transform: uppercase; margin-bottom: 8px;
+}
+.mc-col.t1 .mc-col-tag { background: var(--sky-l); color: var(--sky); border: 1px solid var(--sky-mid); }
+.mc-col.t2 .mc-col-tag { background: var(--mint-l); color: var(--mint); border: 1px solid #5EEAD4; }
+.mc-col.t3 .mc-col-tag { background: var(--warm-l); color: var(--warm); border: 1px solid #FDE68A; }
+.mc-col-title { font-size: 16px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+.mc-col-desc { font-size: 12.5px; color: var(--gray-600); line-height: 1.55; }
+.mc-list { list-style: none; padding: 0; }
+.mc-list li {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 0; border-bottom: 1px solid var(--gray-100);
+  font-size: 13px; color: var(--gray-700);
+}
+.mc-list li:last-child { border-bottom: none; }
+.mc-list li i {
+  width: 28px; height: 28px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; flex-shrink: 0;
+}
+.mc-col.t1 .mc-list li i { background: var(--sky-l); color: var(--sky); }
+.mc-col.t2 .mc-list li i { background: var(--mint-l); color: var(--mint); }
+.mc-col.t3 .mc-list li i { background: var(--warm-l); color: var(--warm); }
+.mc-list li span { flex: 1; }
+.mc-list li small { font-size: 10.5px; color: var(--gray-400); }
+.mc-note {
+  margin-top: 32px; text-align: center;
+  font-size: 13px; color: var(--gray-600);
+  padding: 18px; background: var(--white);
+  border: 1px dashed var(--gray-300); border-radius: var(--radius-md);
+}
+.mc-note strong { color: var(--navy); }
+
+/* ════════════════════════════════════════════════════════
+   REPORT PREVIEW
+   ════════════════════════════════════════════════════════ */
+.report-sec { background: var(--white); }
+.report-grid {
+  display: grid; grid-template-columns: 1fr 1.15fr;
+  gap: 60px; align-items: start;
+}
+.report-left h2 { margin-bottom: 14px; }
+.report-left .section-sub { margin-bottom: 28px; }
+.report-feature-list { list-style: none; padding: 0; }
+.report-feature-list li {
+  display: flex; gap: 14px; padding: 14px 0;
+  border-bottom: 1px solid var(--gray-100);
+}
+.report-feature-list li:last-child { border-bottom: none; }
+.report-feature-list li .rfl-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: var(--sky-l); color: var(--sky);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+}
+.report-feature-list li .rfl-text strong {
+  display: block; font-size: 14px; color: var(--navy); margin-bottom: 2px;
+}
+.report-feature-list li .rfl-text span {
+  font-size: 12.5px; color: var(--gray-600); line-height: 1.55;
+}
+
+/* Report mockup (right side) */
+.report-mockup {
+  background: var(--white); border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg); overflow: hidden;
+  box-shadow: var(--shadow-xl); position: relative;
+  transform: rotate(0.5deg);
+}
+.report-cover {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--sky-deep) 100%);
+  padding: 22px; color: #fff; position: relative; overflow: hidden;
+}
+.report-cover::after {
+  content: ''; position: absolute; right: -20px; top: -20px;
+  width: 110px; height: 110px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(179,216,240,0.25), transparent 70%);
+}
+.report-cover .rc-no { font-size: 10px; color: var(--sky-mid); letter-spacing: 1.5px; font-weight: 700; margin-bottom: 6px; }
+.report-cover .rc-title { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
+.report-cover .rc-meta { font-size: 11.5px; color: rgba(255,255,255,0.6); }
+.report-body { padding: 20px 22px; }
+.report-row { margin-bottom: 16px; }
+.report-row:last-child { margin-bottom: 0; }
+.report-row h4 {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.6px;
+  color: var(--gray-600); text-transform: uppercase;
+  margin-bottom: 8px; display: flex; align-items: center; gap: 5px;
+}
+.report-row h4 i { color: var(--sky); font-size: 13px; }
+.report-row .rr-quote {
+  font-size: 13px; color: var(--gray-700); line-height: 1.65;
+  padding: 11px 14px; background: var(--gray-50);
+  border-radius: 10px; border-left: 3px solid var(--sky-mid);
+}
+.report-row .rr-quote em { font-style: italic; color: var(--gray-500); display: block; font-size: 11px; margin-top: 4px; }
+.report-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+.r-chip {
+  font-size: 11.5px; font-weight: 600;
+  padding: 4px 10px; border-radius: 12px;
+  background: var(--sky-l); color: var(--sky);
+  border: 1px solid var(--sky-mid);
+}
+.r-chip.mint { background: var(--mint-l); color: var(--mint); border-color: #5EEAD4; }
+.r-chip.warm { background: var(--warm-l); color: var(--warm); border-color: #FDE68A; }
+.report-actions { padding: 10px 0; }
+.report-actions label {
+  display: flex; align-items: center; gap: 8px;
+  padding: 5px 0; font-size: 12.5px; color: var(--gray-700);
+}
+.report-actions label input { accent-color: var(--sky); }
+.report-school {
+  background: var(--cream); border: 1px solid #FDE68A;
+  border-radius: 10px; padding: 11px 13px;
+  font-size: 12px; line-height: 1.6; color: var(--gray-700);
+}
+.report-school strong { color: var(--navy); }
+
+/* ════════════════════════════════════════════════════════
+   MVP STATUS
+   ════════════════════════════════════════════════════════ */
+.mvp { background: linear-gradient(180deg, var(--navy-l) 0%, var(--white) 100%); }
+.mvp-grid {
+  display: grid; grid-template-columns: 1fr 1.4fr;
+  gap: 56px; align-items: start;
+}
+.mvp-left .mvp-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--warm-l); color: var(--warm);
+  border: 1px solid #FDE68A;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.8px;
+  padding: 5px 12px; border-radius: 20px;
+  margin-bottom: 18px; text-transform: uppercase;
+}
+.mvp-left h2 { margin-bottom: 14px; }
+.mvp-left p { font-size: 14.5px; color: var(--gray-600); line-height: 1.75; margin-bottom: 18px; }
+
+.mvp-timeline { position: relative; padding-left: 32px; }
+.mvp-timeline::before {
+  content: ''; position: absolute;
+  left: 14px; top: 8px; bottom: 8px;
+  width: 2px; background: linear-gradient(180deg, var(--sky) 0%, var(--mint) 60%, var(--gray-200) 100%);
+}
+.mvp-item {
+  position: relative;
+  padding: 14px 18px; margin-bottom: 12px;
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+}
+.mvp-item::before {
+  content: ''; position: absolute;
+  left: -25px; top: 20px;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--white);
+  border: 3px solid var(--gray-300);
+}
+.mvp-item.done::before { background: var(--green); border-color: var(--green); }
+.mvp-item.cur::before { background: var(--warm); border-color: var(--warm-l); box-shadow: 0 0 0 3px var(--warm); }
+.mvp-item.todo::before { background: var(--white); border-color: var(--gray-300); }
+.mvp-item .mi-status {
+  display: inline-block;
+  font-size: 10.5px; font-weight: 700; letter-spacing: 0.5px;
+  padding: 3px 9px; border-radius: 6px;
+  text-transform: uppercase; margin-bottom: 6px;
+}
+.mvp-item.done .mi-status { background: var(--green-l); color: var(--green); }
+.mvp-item.cur  .mi-status { background: var(--warm-l); color: var(--warm); }
+.mvp-item.todo .mi-status { background: var(--gray-100); color: var(--gray-500); }
+.mvp-item h5 { font-size: 14.5px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+.mvp-item p { font-size: 12.5px; color: var(--gray-600); line-height: 1.6; margin: 0; }
+
+/* ════════════════════════════════════════════════════════
+   FINAL CTA
+   ════════════════════════════════════════════════════════ */
+.cta-final {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-deep) 100%);
+  position: relative; overflow: hidden;
+  text-align: center;
+  padding: 100px 24px;
+}
+.cta-final::before {
+  content: ''; position: absolute; inset: 0;
+  background:
+    radial-gradient(circle at 20% 30%, rgba(20,184,166,0.20), transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(26,111,168,0.25), transparent 50%);
+}
+.cta-final::after {
+  content: ''; position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+}
+.cta-final .container { position: relative; z-index: 2; }
+.cta-final h2 {
+  font-size: clamp(28px, 4.5vw, 44px);
+  font-weight: 800; color: #fff;
+  line-height: 1.3; letter-spacing: -0.8px;
+  margin-bottom: 18px;
+}
+.cta-final h2 em {
+  font-style: normal;
+  background: linear-gradient(120deg, var(--sky-mid) 0%, var(--mint) 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.cta-final p { font-size: 16px; color: rgba(255,255,255,0.7); line-height: 1.7; margin-bottom: 36px; max-width: 600px; margin-left: auto; margin-right: auto; }
+.cta-final .btn-primary {
+  background: #fff; color: var(--navy);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+.cta-final .btn-primary:hover {
+  background: var(--sky-l); color: var(--navy);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+}
+
+/* ════════════════════════════════════════════════════════
+   FOOTER
+   ════════════════════════════════════════════════════════ */
+.site-footer {
+  background: var(--navy-deep); color: rgba(255,255,255,0.6);
+  padding: 48px 0 32px; font-size: 13px;
+}
+.footer-inner {
+  display: flex; gap: 40px; flex-wrap: wrap;
+  padding-bottom: 32px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.footer-brand { flex: 1; min-width: 200px; }
+.footer-brand .brand { color: #fff; margin-bottom: 12px; }
+.footer-brand p { font-size: 12.5px; line-height: 1.7; max-width: 300px; }
+.footer-col h6 {
+  font-size: 11px; font-weight: 700; color: var(--sky-mid);
+  letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px;
+}
+.footer-col a {
+  display: block; font-size: 13px; padding: 4px 0;
+  color: rgba(255,255,255,0.65); transition: color .15s;
+}
+.footer-col a:hover { color: #fff; }
+.footer-bottom {
+  margin-top: 24px;
+  display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+  font-size: 12px; color: rgba(255,255,255,0.4);
+}
+
+/* ════════════════════════════════════════════════════════
+   RESPONSIVE
+   ════════════════════════════════════════════════════════ */
+@media (max-width: 960px) {
+  section { padding: 72px 0; }
+  .hero-grid { grid-template-columns: 1fr; gap: 50px; }
+  .hero-mockup { max-width: 320px; margin: 0 auto; }
+  .flow-wrap { grid-template-columns: repeat(2, 1fr); }
+  .flow-step::after { display: none; }
+  .diff-grid { grid-template-columns: 1fr; }
+  .mc-grid { grid-template-columns: 1fr; }
+  .report-grid { grid-template-columns: 1fr; gap: 40px; }
+  .mvp-grid { grid-template-columns: 1fr; gap: 32px; }
+}
+@media (max-width: 640px) {
+  section { padding: 56px 0; }
+  .nav-menu { display: none; }
+  .mobile-toggle { display: flex; }
+  .header-cta { display: none; }
+  .hero { padding: 60px 0; }
+  .hero-actions { flex-direction: column; align-items: stretch; }
+  .hero-actions .btn { width: 100%; }
+  .problem-grid { grid-template-columns: 1fr; }
+  .flow-wrap { grid-template-columns: 1fr; }
+  .sk-grid { grid-template-columns: 1fr; }
+  .float-card { display: none; }
+  .diff-compare { flex-direction: column; align-items: flex-start; }
+}
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════════════════
+     HEADER
+     ════════════════════════════════════════════════════════ -->
+<header class="site-header">
+  <div class="site-header-inner">
+    <a href="#" class="brand">
+      <div class="logo-mark">M</div>
+      MEETOR
+    </a>
+    <nav class="nav-menu">
+      <a href="#problem">문제정의</a>
+      <a href="#solution">솔루션</a>
+      <a href="#diff">차별점</a>
+      <a href="#stakeholder">대상별 가치</a>
+      <a href="#report">리포트</a>
+      <a href="./meetor_v2.html" class="btn btn-primary header-cta">
+        <i class="ti ti-device-mobile"></i> 데모 보기
+      </a>
+    </nav>
+    <button class="mobile-toggle" onclick="toggleMobileMenu()" aria-label="메뉴 열기">
+      <i class="ti ti-menu-2"></i>
+    </button>
+  </div>
+</header>
+
+<!-- ════════════════════════════════════════════════════════
+     HERO
+     ════════════════════════════════════════════════════════ -->
+<section class="hero" id="top">
+  <div class="container">
+    <div class="hero-grid">
+      <!-- LEFT: 카피 + CTA -->
+      <div class="hero-copy">
+        <span class="eyebrow"><i class="ti ti-sparkles"></i> AI 진로탐색 멘토링 플랫폼</span>
+        <h1>
+          진로검사로 끝나지 않는<br>
+          <em>AI 기반 진로탐색</em><br>
+          멘토링 플랫폼
+        </h1>
+        <p class="hero-sub">
+          MEETOR는 진로를 아직 정하지 못한 학생에게 <strong style="color:var(--navy)">AI 분석 · 현업 멘토링 · 진로탐색 리포트</strong>까지
+          이어지는 안전한 진로탐색 경험을 제공합니다.
+        </p>
+        <div class="hero-actions">
+          <a href="./meetor_v2.html" class="btn btn-primary btn-lg">
+            <i class="ti ti-device-mobile"></i> 서비스 데모 보기
+          </a>
+          <a href="#mentor-apply" class="btn btn-secondary btn-lg">
+            <i class="ti ti-user-plus"></i> 멘토로 참여하기
+          </a>
+        </div>
+        <div class="hero-trust">
+          <div class="hero-trust-item"><i class="ti ti-shield-check"></i> 7단계 멘토 검증</div>
+          <div class="hero-trust-item"><i class="ti ti-eye"></i> 보호자 참관 가능</div>
+          <div class="hero-trust-item"><i class="ti ti-file-certificate"></i> 학교 제출용 리포트</div>
+        </div>
+      </div>
+
+      <!-- RIGHT: 폰 mockup + 떠다니는 카드 -->
+      <div class="hero-mockup">
+        <!-- 떠다니는 카드 1: 매칭률 -->
+        <div class="float-card fc1">
+          <div class="fc-icon"><i class="ti ti-target"></i></div>
+          <div>
+            <div class="fc-label">AI Match</div>
+            <div class="fc-value">98% 적합</div>
+          </div>
+        </div>
+        <!-- 떠다니는 카드 2: 검증 -->
+        <div class="float-card fc2">
+          <div class="fc-icon"><i class="ti ti-shield-check"></i></div>
+          <div>
+            <div class="fc-label">Verified</div>
+            <div class="fc-value">현업 5년차</div>
+          </div>
+        </div>
+
+        <!-- 폰 -->
+        <div class="phone">
+          <div class="phone-screen">
+            <div class="phone-notch"></div>
+            <div class="phone-header-bar">
+              <div class="phone-logo">M</div>
+              <div class="phone-logo-text">MEETOR</div>
+            </div>
+            <div class="phone-content">
+              <span class="phone-tag"><i class="ti ti-robot" style="font-size:9px"></i> AI 매칭</span>
+              <div class="phone-h">추천 멘토 Top 3</div>
+              <div class="phone-sub">분석된 프로파일 기반 검수 완료</div>
+
+              <!-- 추천 멘토 메인 카드 -->
+              <div class="phone-mentor-card">
+                <div class="phone-mentor-head">
+                  <div class="phone-avatar">김은</div>
+                  <div style="flex:1">
+                    <div class="phone-mentor-name">김은지 멘토</div>
+                    <div class="phone-mentor-job">패션 디자이너 · 무신사</div>
+                  </div>
+                  <div class="phone-match">98%</div>
+                </div>
+                <div class="phone-reason">시각·창작형 88점. "무신사 룩북" 관심과 정확히 일치하는 멘토예요.</div>
+              </div>
+
+              <!-- 미니 카드 2 -->
+              <div class="phone-mini-card outline">
+                <div class="phone-mini-avatar" style="background:var(--mint-l);color:var(--mint);border:1.5px solid #5EEAD4">최지</div>
+                <div class="phone-mini-info">
+                  <div class="phone-mini-name">최지원 · 패션 MD</div>
+                  <div class="phone-mini-job">29CM 바잉팀</div>
+                </div>
+                <div class="phone-mini-match">91%</div>
+              </div>
+              <!-- 미니 카드 3 -->
+              <div class="phone-mini-card outline">
+                <div class="phone-mini-avatar" style="background:var(--navy-l);color:var(--navy);border:1.5px solid #BFDBFE">박준</div>
+                <div class="phone-mini-info">
+                  <div class="phone-mini-name">박준혁 · 크리에이터</div>
+                  <div class="phone-mini-job">유튜브 82만</div>
+                </div>
+                <div class="phone-mini-match">85%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════
+     PROBLEM
+     ════════════════════════════════════════════════════════ -->
+<section class="problem" id="problem">
+  <div class="container">
+    <span class="eyebrow warm"><i class="ti ti-alert-triangle"></i> Problem</span>
+    <h2 class="section-title">진로 고민은 많은데,<br><em>제대로 된 진로탐색</em>은 부족합니다</h2>
+    <p class="section-sub">결과지 한 장으로 끝나는 진로검사, 대학생 위주의 멘토링. 정작 중·고등학생은 갈 곳이 없습니다.</p>
+
+    <div class="problem-grid">
+      <div class="problem-card">
+        <div class="pc-num">01</div>
+        <div class="pc-icon"><i class="ti ti-mood-confuzed"></i></div>
+        <div class="pc-title">학생은 무엇을 하고 싶은지 모릅니다</div>
+        <p class="pc-desc">관심사는 있는데 그게 직업으로 어떻게 연결되는지 알 수 없어요. 검사 결과지에는 "예술형 88점"이라고 적혀있지만, 실제로 그 일이 어떤지는 아무도 알려주지 않습니다.</p>
+        <div class="pc-quote">"디자이너가 하루를 어떻게 보내는지 한 번도 들어본 적이 없어요." — 중2 학생</div>
+      </div>
+
+      <div class="problem-card">
+        <div class="pc-num">02</div>
+        <div class="pc-icon"><i class="ti ti-shield-off"></i></div>
+        <div class="pc-title">학부모는 신뢰할 수단이 없습니다</div>
+        <p class="pc-desc">진로 컨설팅은 비싸고 검증이 어렵습니다. 미성년 자녀가 모르는 어른과 화상으로 만난다는 것 자체가 부담이고, 안심하고 결제할 만한 표준이 시장에 없습니다.</p>
+        <div class="pc-quote">"믿고 맡길 데가 없어서, 결국 학원만 더 보내게 되더라구요." — 중3 학부모</div>
+      </div>
+
+      <div class="problem-card">
+        <div class="pc-num">03</div>
+        <div class="pc-icon"><i class="ti ti-file-x"></i></div>
+        <div class="pc-title">진로검사는 결과지로 끝납니다</div>
+        <p class="pc-desc">커리어넷·홀랜드 검사는 좋은 출발점이지만, "다음에 무엇을 해야 하는지"가 없습니다. 코드 6글자와 추천 직업 리스트만으로 진로가 구체화되지 않아요. 산출물도, 후속 활동도 없습니다.</p>
+        <div class="pc-quote">"검사 결과지는 받았는데, 그 다음에 뭘 해야 할지 모르겠어요." — 고1 학생</div>
+      </div>
+
+      <div class="problem-card">
+        <div class="pc-num">04</div>
+        <div class="pc-icon"><i class="ti ti-school-off"></i></div>
+        <div class="pc-title">기존 멘토링은 대학생·취준생 중심입니다</div>
+        <p class="pc-desc">숨고·잇다·코멘토 등 대부분의 멘토링 플랫폼은 성인 대상이고, 미성년자 안전 설계가 없습니다. 중·고생 대상으로 검증된 현업 멘토를 만나는 표준화된 경로가 한국에 부재합니다.</p>
+        <div class="pc-quote">"중학생이 신청할 수 있는 곳을 찾기 어려웠어요." — 학부모 인터뷰</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════
+     SOLUTION FLOW
+     ════════════════════════════════════════════════════════ -->
+<section class="solution" id="solution">
+  <div class="container">
+    <span class="eyebrow"><i class="ti ti-route"></i> Solution</span>
+    <h2 class="section-title">관심사 입력부터 진로탐색 리포트까지,<br><em>한 흐름으로 연결</em>합니다</h2>
+    <p class="section-sub">진로검사 + 멘토링 + 리포트가 따로 노는 시장에서, MEETOR는 5단계 통합 경험을 제공합니다.</p>
+
+    <div class="flow-wrap">
+      <div class="flow-step">
+        <div class="fs-num">1</div>
+        <i class="ti ti-pencil fs-icon"></i>
+        <div class="fs-title">관심사 입력</div>
+        <p class="fs-desc">학년·관심 분야·궁금한 직업을 입력. "아직 모르겠어요" 도 OK.</p>
+      </div>
+      <div class="flow-step">
+        <div class="fs-num">2</div>
+        <i class="ti ti-robot fs-icon"></i>
+        <div class="fs-title">AI 프로파일 분석</div>
+        <p class="fs-desc">관심 키워드·성향·추천 진로 방향을 자동 도출합니다.</p>
+      </div>
+      <div class="flow-step">
+        <div class="fs-num">3</div>
+        <i class="ti ti-users-group fs-icon"></i>
+        <div class="fs-title">맞춤 멘토 추천</div>
+        <p class="fs-desc">검수 완료된 412+ 멘토 풀에서 Top 3 매칭 제공.</p>
+      </div>
+      <div class="flow-step">
+        <div class="fs-num">4</div>
+        <i class="ti ti-video fs-icon"></i>
+        <div class="fs-title">보호자 동의 후 1:1 세션</div>
+        <p class="fs-desc">60분 화상 멘토링. 녹화·참관 기본 탑재.</p>
+      </div>
+      <div class="flow-step">
+        <div class="fs-num">5</div>
+        <i class="ti ti-file-certificate fs-icon"></i>
+        <div class="fs-title">진로탐색 리포트</div>
+        <p class="fs-desc">AI 자동 생성. 학교 제출 가능한 산출물.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════
+     DIFFERENTIATION
+     ════════════════════════════════════════════════════════ -->
+<section class="diff" id="diff">
+  <div class="container">
+    <span class="eyebrow mint"><i class="ti ti-bolt"></i> Differentiation</span>
+    <h2 class="section-title">단순 멘토 매칭이 아닌,<br><em>산출물이 남는 진로탐색</em>입니다</h2>
+    <p class="section-sub">기존 서비스가 멈춘 자리에서 MEETOR가 시작합니다.</p>
+
+    <!-- 비교 -->
+    <div class="diff-compare">
+      <span class="dc-label">기존</span>
+      <span class="dc-item">진로검사 (결과지로 끝)</span>
+      <span class="dc-item">대학생 멘토링 (중·고생 X)</span>
+      <span class="dc-item">과외·학원 (학습 중심)</span>
+      <span class="dc-label" style="margin-left:auto">MEETOR</span>
+      <span class="dc-item us"><i class="ti ti-check"></i> AI 분석 + 검증 멘토 + 산출물 리포트</span>
+    </div>
+
+    <div class="diff-grid">
+      <div class="diff-card c1">
+        <div class="dcd-icon"><i class="ti ti-robot"></i></div>
+        <h3 class="dcd-title">AI 맞춤 분석</h3>
+        <p class="dcd-desc">자기소개 한 문단에서 관심 키워드, 성향 점수, 추천 진로 Top 3까지 자동으로 도출합니다.</p>
+        <ul class="dcd-bullets">
+          <li><i class="ti ti-check"></i> 관심 키워드 자동 추출</li>
+          <li><i class="ti ti-check"></i> 4축 성향 분석 점수</li>
+          <li><i class="ti ti-check"></i> 인접 직군까지 함께 추천</li>
+        </ul>
+      </div>
+      <div class="diff-card c2">
+        <div class="dcd-icon"><i class="ti ti-shield-check"></i></div>
+        <h3 class="dcd-title">검증된 멘토링</h3>
+        <p class="dcd-desc">실명·재직·범죄 경력 등 7단계 검증을 통과한 현업 실무자만 활동합니다. 미성년자 보호를 기본 설계로 둡니다.</p>
+        <ul class="dcd-bullets">
+          <li><i class="ti ti-check"></i> 성범죄·아동학대 경력 조회</li>
+          <li><i class="ti ti-check"></i> 전 구간 녹화 · 보호자 참관</li>
+          <li><i class="ti ti-check"></i> 플랫폼 내 대화만 허용</li>
+        </ul>
+      </div>
+      <div class="diff-card c3">
+        <div class="dcd-icon"><i class="ti ti-file-certificate"></i></div>
+        <h3 class="dcd-title">진로탐색 리포트</h3>
+        <p class="dcd-desc">세션 후 AI가 멘토 피드백·학생 강점·다음 액션을 정리합니다. 생활기록부에 활용 가능한 학교 제출용 요약본 포함.</p>
+        <ul class="dcd-bullets">
+          <li><i class="ti ti-check"></i> 멘토 피드백 자동 정리</li>
+          <li><i class="ti ti-check"></i> 다음 액션 체크리스트</li>
+          <li><i class="ti ti-check"></i> 생기부 진로활동 기재용</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════
+     STAKEHOLDER VALUES
+     ════════════════════════════════════════════════════════ -->
+<section class="stakeholder" id="stakeholder">
+  <div class="container">
+    <span class="eyebrow"><i class="ti ti-users"></i> Value by Stakeholder</span>
+    <h2 class="section-title">네 주체가 모두 얻는 것이<br><em>분명히 있습니다</em></h2>
+    <p class="section-sub">학생·학부모·멘토·학교 — MEETOR는 모든 이해관계자에게 명확한 가치를 제공하는 구조입니다.</p>
+
+    <div class="sk-grid">
+      <!-- 학생 -->
+      <div class="sk-card student">
+        <div class="sk-head">
+          <div class="sk-icon"><i class="ti ti-school"></i></div>
+          <div>
+            <div class="sk-label">For Students</div>
+            <div class="sk-name">학생</div>
+          </div>
+        </div>
+        <ul>
+          <li><i class="ti ti-check"></i> 검사 결과지가 아닌, <strong>실제 그 일을 하는 어른</strong>의 이야기</li>
+          <li><i class="ti ti-check"></i> "아직 모르겠어요"에서 출발 — 모르는 게 정상</li>
+          <li><i class="ti ti-check"></i> 미대·이과 같은 좁은 진로관 너머의 가능성 탐색</li>
+          <li><i class="ti ti-check"></i> 멘토와의 대화에서 자기 강점·관심을 발견</li>
+        </ul>
+      </div>
+
+      <!-- 학부모 -->
+      <div class="sk-card parent">
+        <div class="sk-head">
+          <div class="sk-icon"><i class="ti ti-heart-handshake"></i></div>
+          <div>
+            <div class="sk-label">For Parents</div>
+            <div class="sk-name">학부모</div>
+          </div>
+        </div>
+        <ul>
+          <li><i class="ti ti-check"></i> 검증된 멘토 · 녹화 · 참관으로 <strong>안심하고 결제</strong></li>
+          <li><i class="ti ti-check"></i> 자녀의 관심과 강점을 객관적으로 확인</li>
+          <li><i class="ti ti-check"></i> 학교 진로 상담 시 활용할 수 있는 공식 리포트</li>
+          <li><i class="ti ti-check"></i> 일회성 검사가 아닌, 지속적인 탐색 로드맵</li>
+        </ul>
+      </div>
+
+      <!-- 멘토 -->
+      <div class="sk-card mentor">
+        <div class="sk-head">
+          <div class="sk-icon"><i class="ti ti-id-badge-2"></i></div>
+          <div>
+            <div class="sk-label">For Mentors</div>
+            <div class="sk-name">멘토</div>
+          </div>
+        </div>
+        <ul>
+          <li><i class="ti ti-check"></i> 후배 양성·사회 기여를 의미 있게 실현</li>
+          <li><i class="ti ti-check"></i> 부수입 + 본인 브랜딩 · 포트폴리오로 활용</li>
+          <li><i class="ti ti-check"></i> AI 질문 가이드로 부담 없는 멘토링 진행</li>
+          <li><i class="ti ti-check"></i> 청소년 멘토링 인증 — 사회공헌 이력</li>
+        </ul>
+      </div>
+
+      <!-- 학교·기관 -->
+      <div class="sk-card school">
+        <div class="sk-head">
+          <div class="sk-icon"><i class="ti ti-building-community"></i></div>
+          <div>
+            <div class="sk-label">For Schools / Institutions</div>
+            <div class="sk-name">학교·기관</div>
+          </div>
+        </div>
+        <ul>
+          <li><i class="ti ti-check"></i> 자유학기제·진로활동 운영 부담 경감</li>
+          <li><i class="ti ti-check"></i> 단체 라이선스로 다양한 직업 멘토 동시 제공</li>
+          <li><i class="ti ti-check"></i> 학생 단위 리포트로 진로활동 기록 표준화</li>
+          <li><i class="ti ti-check"></i> 교육청 진로교육 사업과 연계 가능</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════
+     MENTOR CATEGORIES
+     ════════════════════════════════════════════════════════ -->
+<section class="mentors" id="mentors">
+  <div class="container">
+    <span class="eyebrow warm"><i class="ti ti-users-group"></i> Mentor Pool</span>
+    <h2 class="section-title">전형부터 비전형, 기술·장인까지<br><em>38개 직업 분야</em>의 현업 멘토</h2>
+    <p class="section-sub">"좋은 대학"이라는 좁은 출구를 넘어, 실제로 존재하는 다양한 어른들과 연결합니다.</p>
+
+    <div class="mc-tabs">
+      <div class="mc-tab-item t1"><span class="dot"></span> 전형 직업 (지식·자격 기반)</div>
+      <div class="mc-tab-item t2"><span class="dot"></span> 비전형 직업 (창작·표현 기반)</div>
+      <div class="mc-tab-item t3"><span class="dot"></span> 기술·장인 직업 (현장·숙련 기반)</div>
+    </div>
+
+    <div class="mc-grid">
+      <!-- 전형 -->
+      <div class="mc-col t1">
+        <div class="mc-col-head">
+          <span class="mc-col-tag">Type 01 · 전형</span>
+          <div class="mc-col-title">지식·자격 기반</div>
+          <p class="mc-col-desc">학교에서 가장 익숙한 진로. 정확한 정보로 환상이 아닌 현실을 알려줍니다.</p>
+        </div>
+        <ul class="mc-list">
+          <li><i class="ti ti-stethoscope"></i><span>의사 · 약사</span><small>병원/제약</small></li>
+          <li><i class="ti ti-scale"></i><span>변호사 · 검사</span><small>법조</small></li>
+          <li><i class="ti ti-school"></i><span>교사 · 교수</span><small>교육</small></li>
+          <li><i class="ti ti-microscope"></i><span>연구원</span><small>과학·R&amp;D</small></li>
+          <li><i class="ti ti-calculator"></i><span>회계사 · 세무사</span><small>금융·재무</small></li>
+        </ul>
+      </div>
+
+      <!-- 비전형 -->
+      <div class="mc-col t2">
+        <div class="mc-col-head">
+          <span class="mc-col-tag">Type 02 · 비전형</span>
+          <div class="mc-col-title">창작·표현 기반</div>
+          <p class="mc-col-desc">생계가 가능한 창작 직업. 막연한 환상이 아닌 실제 수입·시간 구조까지 공유합니다.</p>
+        </div>
+        <ul class="mc-list">
+          <li><i class="ti ti-video"></i><span>유튜버 · 크리에이터</span><small>콘텐츠</small></li>
+          <li><i class="ti ti-run"></i><span>운동선수 · 코치</span><small>스포츠</small></li>
+          <li><i class="ti ti-palette"></i><span>디자이너 · 일러스트레이터</span><small>비주얼</small></li>
+          <li><i class="ti ti-chef-hat"></i><span>셰프 · 파티시에</span><small>F&amp;B</small></li>
+          <li><i class="ti ti-pencil"></i><span>작가 · 시나리오 라이터</span><small>스토리</small></li>
+        </ul>
+      </div>
+
+      <!-- 기술·장인 -->
+      <div class="mc-col t3">
+        <div class="mc-col-head">
+          <span class="mc-col-tag">Type 03 · 기술·장인</span>
+          <div class="mc-col-title">현장·숙련 기반</div>
+          <p class="mc-col-desc">대학이 정답이 아닌 길. 손과 머리로 만들어내는 직업의 가치를 정면으로 다룹니다.</p>
+        </div>
+        <ul class="mc-list">
+          <li><i class="ti ti-tool"></i><span>목공 · 가구 장인</span><small>수공예</small></li>
+          <li><i class="ti ti-bolt"></i><span>전기 기술자</span><small>설비</small></li>
+          <li><i class="ti ti-flame"></i><span>용접 기술자</span><small>플랜트</small></li>
+          <li><i class="ti ti-robot"></i><span>로봇 · 메카트로닉스</span><small>제조</small></li>
+          <li><i class="ti ti-brain"></i><span>AI 엔지니어</span><small>테크</small></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="mc-note">
+      🔍 <strong>운영 정책 ·</strong> 모든 멘토는 실명·재직·범죄 경력 조회 등 <strong>7단계 검증</strong>을 거쳐 등록됩니다.
+      대학생·취준생은 멘토로 활동할 수 없으며, <strong>현업 3년 이상</strong>의 실무자만 인정됩니다.
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════
+     REPORT PREVIEW
+     ════════════════════════════════════════════════════════ -->
+<section class="report-sec" id="report">
+  <div class="container">
+    <div class="report-grid">
+      <!-- 좌: 설명 -->
+      <div class="report-left">
+        <span class="eyebrow"><i class="ti ti-file-certificate"></i> Report Preview</span>
+        <h2 class="section-title">세션이 끝나면<br><em>리포트가 남습니다</em></h2>
+        <p class="section-sub">MEETOR의 차별점은 "산출물"입니다. 60분 세션은 사라지지 않고, 학교·가정에서 활용할 수 있는 공식 문서로 정리됩니다.</p>
+
+        <ul class="report-feature-list">
+          <li>
+            <div class="rfl-icon"><i class="ti ti-question-mark"></i></div>
+            <div class="rfl-text">
+              <strong>오늘의 핵심 질문</strong>
+              <span>학생이 세션 전에 가졌던 가장 큰 진로 고민을 기록</span>
+            </div>
+          </li>
+          <li>
+            <div class="rfl-icon"><i class="ti ti-message-2"></i></div>
+            <div class="rfl-text">
+              <strong>멘토 피드백</strong>
+              <span>현업 멘토가 직접 본 학생의 가능성과 조언</span>
+            </div>
+          </li>
+          <li>
+            <div class="rfl-icon"><i class="ti ti-sparkles"></i></div>
+            <div class="rfl-text">
+              <strong>학생의 강점</strong>
+              <span>대화에서 발견된 키워드 기반 강점 5종</span>
+            </div>
+          </li>
+          <li>
+            <div class="rfl-icon"><i class="ti ti-list-check"></i></div>
+            <div class="rfl-text">
+              <strong>다음 액션 체크리스트</strong>
+              <span>세션 후 학생이 바로 실행할 수 있는 4가지 과제</span>
+            </div>
+          </li>
+          <li>
+            <div class="rfl-icon"><i class="ti ti-school"></i></div>
+            <div class="rfl-text">
+              <strong>학교 제출 참고용 요약</strong>
+              <span>민감 정보 제거된 생기부 진로활동 기재용 요약</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- 우: 리포트 mockup -->
+      <div class="report-mockup">
+        <div class="report-cover">
+          <div class="rc-no">MEETOR CAREER REPORT · No. 240502-7821</div>
+          <div class="rc-title">박서연 · 패션 디자이너 진로탐색</div>
+          <div class="rc-meta">2026.05.02 · 김은지 멘토 · 60분 세션</div>
+        </div>
+        <div class="report-body">
+          <div class="report-row">
+            <h4><i class="ti ti-question-mark"></i> 오늘의 핵심 질문</h4>
+            <div class="rr-quote">
+              "그림 좋아한다고 다 미대 가야 하나요? 디자이너는 실제로 어떻게 사나요?"
+              <em>— 학생이 세션 전 입력한 가장 큰 고민</em>
+            </div>
+          </div>
+
+          <div class="report-row">
+            <h4><i class="ti ti-message-2"></i> 멘토 피드백</h4>
+            <div class="rr-quote" style="font-style:italic;color:var(--gray-600)">
+              "서연 학생은 색감과 트렌드에 대한 직관이 또래보다 빨라요. <strong style="color:var(--navy);font-style:normal">미대가 유일한 답은 아닙니다.</strong> 매주 룩북 한 권 분석하기, 친구들 옷 추천 이유를 글로 적어보는 것부터 시작해보세요."
+            </div>
+          </div>
+
+          <div class="report-row">
+            <h4><i class="ti ti-sparkles"></i> 학생의 강점</h4>
+            <div class="report-chips">
+              <span class="r-chip">시각적 감각</span>
+              <span class="r-chip mint">트렌드 민감도</span>
+              <span class="r-chip">색감 판단력</span>
+              <span class="r-chip warm">큐레이션 관점</span>
+              <span class="r-chip mint">표현 욕구</span>
+            </div>
+          </div>
+
+          <div class="report-row">
+            <h4><i class="ti ti-list-check"></i> 다음 액션 체크리스트</h4>
+            <div class="report-actions">
+              <label><input type="checkbox" checked> 매주 룩북 1권 분석 노트 (4주)</label>
+              <label><input type="checkbox"> 친구 옷 추천 이유 글로 정리 (월 2회)</label>
+              <label><input type="checkbox"> 패션 MD 직군 멘토 세션 예약</label>
+            </div>
+          </div>
+
+          <div class="report-row">
+            <h4 style="color:var(--warm)"><i class="ti ti-school" style="color:var(--warm)"></i> 학교 제출용 요약</h4>
+            <div class="report-school">
+              <strong>[진로활동 · 60분]</strong> 패션 디자이너 현업 멘토와 1:1 진로 탐색 세션 참여. 시각적 감각·트렌드 큐레이션 강점 확인. 디자이너 외 MD·브랜드 마케터 등 인접 직군까지 탐색 범위 확장.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════
+     MVP STATUS
+     ════════════════════════════════════════════════════════ -->
+<section class="mvp" id="mvp">
+  <div class="container">
+    <div class="mvp-grid">
+      <div class="mvp-left">
+        <span class="mvp-badge"><i class="ti ti-rocket" style="font-size:13px"></i> Currently in MVP</span>
+        <h2 class="section-title">지금은 <em>MVP 목업 단계</em>입니다</h2>
+        <p>핵심 사용자 흐름과 운영 정책을 설계하며, 학교·기관 확장 가능성을 검증하고 있습니다. 투명하게 공유합니다.</p>
+
+        <a href="./meetor_v2.html" class="btn btn-primary">
+          <i class="ti ti-device-mobile"></i> 현재 데모 화면 보기
+        </a>
+      </div>
+
+      <div class="mvp-timeline">
+        <div class="mvp-item done">
+          <span class="mi-status">완료</span>
+          <h5>AI 진로 프로파일링 플로우 설계</h5>
+          <p>자기소개 입력 → 키워드·성향 분석 → 추천 진로 도출 흐름을 완성했습니다. 13단계 데모로 검증 가능.</p>
+        </div>
+        <div class="mvp-item done">
+          <span class="mi-status">완료</span>
+          <h5>학생·학부모용 서비스 데모 제작</h5>
+          <p>온보딩부터 리포트 산출까지 전체 플로우의 인터랙티브 목업이 작동합니다.</p>
+        </div>
+        <div class="mvp-item cur">
+          <span class="mi-status">진행 중</span>
+          <h5>멘토 검증 및 세션 운영 정책 설계</h5>
+          <p>7단계 검증 절차 SOP 작성 중. 청소년 보호 표준(녹화·참관·신고) 체계를 외부 자문을 통해 정비합니다.</p>
+        </div>
+        <div class="mvp-item todo">
+          <span class="mi-status">예정</span>
+          <h5>학교·기관 확장 모델 검토</h5>
+          <p>자유학기제·교육청 진로교육 사업과의 연계 가능성을 학교 3곳 인터뷰로 검증 중입니다.</p>
+        </div>
+        <div class="mvp-item todo">
+          <span class="mi-status">예정</span>
+          <h5>파일럿 멘토 30인 사전 확보</h5>
+          <p>전형·비전형·기술장인 직군 균형 있게 모집. 정식 런칭 전 클로즈드 베타로 운영 예정.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════
+     FINAL CTA
+     ════════════════════════════════════════════════════════ -->
+<section class="cta-final">
+  <div class="container">
+    <span class="eyebrow dark"><i class="ti ti-stars"></i> Get Started</span>
+    <h2>
+      진로탐색의 <em>첫 만남</em>을<br>
+      설계합니다.
+    </h2>
+    <p>지금 데모를 확인하고, MEETOR가 어떻게 학생·학부모·멘토·학교 모두에게 가치를 만드는지 직접 경험해보세요.</p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <a href="./meetor_v2.html" class="btn btn-primary btn-lg">
+        <i class="ti ti-device-mobile"></i> 서비스 데모 보기
+      </a>
+      <a href="#mentor-apply" class="btn btn-secondary btn-lg" style="background:transparent;color:#fff;border-color:rgba(255,255,255,0.3)">
+        <i class="ti ti-user-plus"></i> 멘토로 참여하기
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════
+     FOOTER
+     ════════════════════════════════════════════════════════ -->
+<footer class="site-footer" id="mentor-apply">
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="brand">
+          <div class="logo-mark">M</div>
+          MEETOR
+        </div>
+        <p>진로검사로 끝나지 않는, AI 기반 진로탐색 멘토링 플랫폼. 미성년자 보호를 기본 설계로 둡니다.</p>
+      </div>
+      <div class="footer-col">
+        <h6>서비스</h6>
+        <a href="./meetor_v2.html">데모 보기</a>
+        <a href="#problem">문제정의</a>
+        <a href="#solution">솔루션</a>
+        <a href="#diff">차별점</a>
+      </div>
+      <div class="footer-col">
+        <h6>대상별</h6>
+        <a href="#stakeholder">학생·학부모</a>
+        <a href="#mentors">멘토 풀</a>
+        <a href="#stakeholder">학교·기관</a>
+      </div>
+      <div class="footer-col">
+        <h6>회사</h6>
+        <a href="#mvp">진행 현황</a>
+        <a href="#">문의하기</a>
+        <a href="#">파트너십</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 MEETOR · 본 페이지는 창업 신청/심사용 MVP 데모입니다.</span>
+      <span>made with care for teenagers, parents &amp; mentors</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* 모바일 메뉴 (간단 토글) */
+function toggleMobileMenu() {
+  const menu = document.querySelector('.nav-menu');
+  if (menu.style.display === 'flex') {
+    menu.style.cssText = '';
+  } else {
+    menu.style.cssText = `
+      display: flex; flex-direction: column;
+      position: absolute; top: 64px; left: 0; right: 0;
+      background: var(--white); padding: 16px 24px;
+      box-shadow: var(--shadow-md);
+      border-bottom: 1px solid var(--gray-200);
+      align-items: stretch; gap: 0;
+    `;
+  }
+}
+
+/* 부드러운 스크롤 보정 — 헤더 높이만큼 */
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const id = a.getAttribute('href');
+    if (id === '#' || id.length < 2) return;
+    const target = document.querySelector(id);
+    if (target) {
+      e.preventDefault();
+      const y = target.getBoundingClientRect().top + window.scrollY - 80;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+      // 모바일 메뉴 닫기
+      if (window.innerWidth <= 640) {
+        document.querySelector('.nav-menu').style.cssText = '';
+      }
+    }
+  });
+});
+
+/* 섹션 진입 시 등장 애니메이션 */
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.style.opacity = '1';
+      entry.target.style.transform = 'translateY(0)';
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+document.querySelectorAll('.problem-card, .flow-step, .diff-card, .sk-card, .mc-col, .mvp-item').forEach((el, i) => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(20px)';
+  el.style.transition = `opacity .6s ease ${i * 0.05}s, transform .6s ease ${i * 0.05}s`;
+  observer.observe(el);
+});
+</script>
+</body>
+</html>
